@@ -21,7 +21,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   const handleLoginClick = (e?: React.MouseEvent) => {
@@ -104,16 +104,16 @@ export function Navbar() {
             <>
               <span className="hidden text-sm text-gray-700 lg:inline">{user.name}</span>
               <button
-                onClick={logout}
+                onClick={() => router.push('/dashboard')}
                 className="inline-flex rounded-full border border-[#6ec3f4] px-3 py-1.5 text-[10px] font-semibold text-[#088f9f] shadow-inner shadow-white/60 transition hover:bg-white sm:px-4 sm:py-2 sm:text-xs lg:hidden"
               >
-                Đăng xuất
+                Vào Dashboard
               </button>
               <button
-                onClick={logout}
+                onClick={() => router.push('/dashboard')}
                 className="hidden rounded-full bg-gradient-to-r from-[#4ad5c2] to-[#6ec3f4] px-6 py-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(76,212,194,0.4)] transition hover:opacity-90 lg:inline-flex"
               >
-                Đăng xuất
+                Vào Dashboard
               </button>
             </>
           ) : (

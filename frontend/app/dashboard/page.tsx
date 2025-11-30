@@ -1,24 +1,25 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { CardItem } from '@/components/dashboard/CardItem';
-import { cardsService, Card } from '@/lib/cards';
-import Image from 'next/image';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
+import { CardItem } from "@/components/dashboard/CardItem";
+import { cardsService, Card } from "@/lib/cards";
+import Image from "next/image";
 
 export default function DashboardPage() {
   const { user, token, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [cards, setCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!authLoading) {
       if (!user || !token) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
       loadCards();
@@ -32,7 +33,7 @@ export default function DashboardPage() {
       const data = await cardsService.getCards(token);
       setCards(data);
     } catch (err: any) {
-      setError(err.message || 'Không thể tải danh sách thẻ');
+      setError(err.message || "Không thể tải danh sách thẻ");
     } finally {
       setIsLoading(false);
     }
@@ -40,28 +41,32 @@ export default function DashboardPage() {
 
   const handleDelete = async (cardId: string) => {
     if (!token) return;
-    if (!confirm('Bạn có chắc chắn muốn xóa thẻ này?')) return;
+    if (!confirm("Bạn có chắc chắn muốn xóa thẻ này?")) return;
 
     try {
       await cardsService.deleteCard(cardId, token);
       await loadCards();
     } catch (err: any) {
-      alert(err.message || 'Không thể xóa thẻ');
+      alert(err.message || "Không thể xóa thẻ");
     }
   };
 
   const handleEdit = (card: Card) => {
-    // TODO: Navigate to edit page or open edit modal
-    console.log('Edit card:', card);
+    router.push(`/dashboard/cards/edit/${card._id}`);
   };
 
-  const handleShare = (card: Card) => {
-    // TODO: Implement share functionality
-    if (card.qrCodeUrl) {
-      // Copy link or show QR code
-      const cardUrl = `${window.location.origin}/card/${card._id}`;
-      navigator.clipboard.writeText(cardUrl);
-      alert('Đã sao chép link thẻ!');
+  const handleShare = async (card: Card) => {
+    try {
+      if (!card.shareUuid) {
+        alert("Thẻ này chưa có link chia sẻ. Vui lòng tải lại trang.");
+        return;
+      }
+
+      const cardUrl = `${window.location.origin}/card/${card.shareUuid}`;
+      await navigator.clipboard.writeText(cardUrl);
+      alert("Đã sao chép link thẻ!");
+    } catch (err: any) {
+      alert("Không thể sao chép link. Vui lòng thử lại.");
     }
   };
 
@@ -104,13 +109,19 @@ export default function DashboardPage() {
 
         {/* Cards Grid */}
         {error && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600">{error}</div>
+          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-600">
+            {error}
+          </div>
         )}
 
         {cards.length === 0 ? (
           <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
-            <span className="material-icons mb-4 text-6xl text-gray-400">credit_card</span>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">Chưa có thẻ nào</h3>
+            <span className="material-icons mb-4 text-6xl text-gray-400">
+              credit_card
+            </span>
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Chưa có thẻ nào
+            </h3>
             <p className="mb-6 text-sm text-gray-600">
               Tạo thẻ đầu tiên của bạn để bắt đầu chia sẻ thông tin
             </p>

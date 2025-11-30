@@ -22,6 +22,7 @@ export interface Card {
     icon?: string;
   }>;
   qrCodeUrl?: string;
+  shareUuid?: string;
   isActive: boolean;
   viewCount: number;
   createdAt: string;
@@ -75,8 +76,12 @@ export const cardsService = {
     return api.get<Card[]>('/cards', { token });
   },
 
-  async getCard(id: string): Promise<Card> {
-    return api.get<Card>(`/cards/${id}`);
+  async getCard(id: string, token?: string): Promise<Card> {
+    return api.get<Card>(`/cards/${id}`, token ? { token } : {});
+  },
+
+  async getCardByUuid(uuid: string): Promise<Card> {
+    return api.get<Card>(`/cards/share/${uuid}`);
   },
 
   async createCard(
@@ -156,8 +161,78 @@ export const cardsService = {
     return response.json();
   },
 
-  async updateCard(id: string, data: UpdateCardRequest, token: string): Promise<Card> {
-    return api.patch<Card>(`/cards/${id}`, data, { token });
+  async updateCard(
+    id: string,
+    data: UpdateCardRequest,
+    token: string,
+    avatarFile?: File,
+    coverImageFile?: File
+  ): Promise<Card> {
+    const formData = new FormData();
+
+    // Add text fields
+    if (data.cardName) formData.append('cardName', data.cardName);
+    if (data.ownerName) formData.append('ownerName', data.ownerName);
+    if (data.email) formData.append('email', data.email);
+    if (data.phoneNumber) formData.append('phoneNumber', data.phoneNumber);
+    if (data.company) formData.append('company', data.company);
+    if (data.address) formData.append('address', data.address);
+    if (data.description) formData.append('description', data.description);
+
+    // Add files
+    if (avatarFile) {
+      formData.append('avatar', avatarFile);
+    }
+    if (coverImageFile) {
+      formData.append('coverImage', coverImageFile);
+    }
+
+    // Add theme as JSON string
+    if (data.theme) {
+      const themeObj: any = {};
+      if (data.theme.color) themeObj.color = data.theme.color;
+      if (data.theme.icon) themeObj.icon = data.theme.icon;
+      if (Object.keys(themeObj).length > 0) {
+        formData.append('theme', JSON.stringify(themeObj));
+      }
+    }
+
+    // Add links as JSON string of an ARRAY
+    if (data.links && Array.isArray(data.links) && data.links.length > 0) {
+      const validLinks = data.links
+        .filter((link) => link && typeof link === 'object' && link.title && link.url)
+        .map((link) => ({
+          title: link.title,
+          url: link.url,
+          ...(link.icon && { icon: link.icon }),
+        }));
+
+      if (validLinks.length > 0) {
+        formData.append('links', JSON.stringify(validLinks));
+      }
+    }
+
+    // Use fetch directly for FormData
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+    const response = await fetch(`${API_URL}/cards/${id}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        message: 'An error occurred',
+      }));
+      const errorMessage = Array.isArray(error.message)
+        ? error.message.join(', ')
+        : error.message || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
   },
 
   async deleteCard(id: string, token: string): Promise<{ message: string }> {

@@ -69,6 +69,9 @@ export class Card {
   @Prop({ default: 0 })
   viewCount: number;
 
+  @Prop({ unique: true, sparse: true })
+  shareUuid?: string;
+
   @Prop()
   createdAt: Date;
 
@@ -81,3 +84,4 @@ export const CardSchema = SchemaFactory.createForClass(Card);
 // Indexes for better query performance
 CardSchema.index({ userId: 1, createdAt: -1 });
 CardSchema.index({ isActive: 1 });
+CardSchema.index({ shareUuid: 1 });

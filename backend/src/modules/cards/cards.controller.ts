@@ -17,6 +17,7 @@ import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { MobileOnlyGuard } from '../../common/guards/mobile-only.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { UserDocument } from '../users/schemas/user.schema';
 import { avatarUploadConfig, coverUploadConfig } from '../../common/config/multer.config';
@@ -62,6 +63,13 @@ export class CardsController {
   findOne(@Param('id') id: string) {
     // Public endpoint - anyone can view a card
     return this.cardsService.findOne(id);
+  }
+
+  @Get('share/:uuid')
+  @UseGuards(MobileOnlyGuard)
+  findOneByUuid(@Param('uuid') uuid: string) {
+    // Mobile-only endpoint to view card by UUID
+    return this.cardsService.findOneByUuid(uuid);
   }
 
   @Patch(':id')

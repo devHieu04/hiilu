@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as QRCode from 'qrcode';
+import { randomUUID } from 'crypto';
 import { Card, CardDocument } from './schemas/card.schema';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
@@ -30,6 +31,7 @@ export class CardsService {
     const card = new this.cardModel({
       ...createCardDto,
       userId,
+      shareUuid: randomUUID(),
     });
 
     // Save file paths if files were uploaded
@@ -42,10 +44,12 @@ export class CardsService {
 
     const savedCard = await card.save();
 
-    // Generate QR code
-    const qrCodeUrl = await this.generateQRCode(savedCard._id.toString());
-    savedCard.qrCodeUrl = qrCodeUrl;
-    await savedCard.save();
+    // Generate QR code using shareUuid
+    if (savedCard.shareUuid) {
+      const qrCodeUrl = await this.generateQRCode(savedCard.shareUuid);
+      savedCard.qrCodeUrl = qrCodeUrl;
+      await savedCard.save();
+    }
 
     return this.transformCardUrls(savedCard);
   }
@@ -55,6 +59,14 @@ export class CardsService {
       .find({ userId, isActive: true })
       .sort({ createdAt: -1 })
       .exec();
+
+    // Ensure all cards have shareUuid
+    for (const card of cards) {
+      if (!card.shareUuid) {
+        card.shareUuid = randomUUID();
+        await card.save();
+      }
+    }
 
     return cards.map((card) => this.transformCardUrls(card));
   }
@@ -75,6 +87,23 @@ export class CardsService {
     return this.transformCardUrls(card);
   }
 
+  async findOneByUuid(uuid: string) {
+    const card = await this.cardModel.findOne({
+      shareUuid: uuid,
+      isActive: true,
+    });
+
+    if (!card) {
+      throw new NotFoundException('Card not found');
+    }
+
+    // Increment view count
+    card.viewCount += 1;
+    await card.save();
+
+    return this.transformCardUrls(card);
+  }
+
   async update(
     id: string,
     userId: string,
@@ -90,8 +119,15 @@ export class CardsService {
       throw new NotFoundException('Card not found');
     }
 
+    // Generate UUID if card doesn't have one
+    if (!card.shareUuid) {
+      card.shareUuid = randomUUID();
+    }
+
     if (card.userId.toString() !== userId) {
-      throw new ForbiddenException('You do not have permission to update this card');
+      throw new ForbiddenException(
+        'You do not have permission to update this card',
+      );
     }
 
     // Handle avatar file replacement
@@ -125,7 +161,9 @@ export class CardsService {
     }
 
     if (card.userId.toString() !== userId) {
-      throw new ForbiddenException('You do not have permission to delete this card');
+      throw new ForbiddenException(
+        'You do not have permission to delete this card',
+      );
     }
 
     // Delete files
@@ -143,10 +181,12 @@ export class CardsService {
     return { message: 'Card deleted successfully' };
   }
 
-  private async generateQRCode(cardId: string): Promise<string> {
+  private async generateQRCode(shareUuid: string): Promise<string> {
     try {
-      const appUrl = this.configService.get<string>('NEXT_PUBLIC_APP_URL') || 'http://localhost:8081';
-      const cardUrl = `${appUrl}/card/${cardId}`;
+      const appUrl =
+        this.configService.get<string>('NEXT_PUBLIC_APP_URL') ||
+        'http://localhost:8081';
+      const cardUrl = `${appUrl}/card/${shareUuid}`;
 
       // Generate QR code as data URL
       const qrCodeDataUrl = await QRCode.toDataURL(cardUrl, {
@@ -174,10 +214,18 @@ export class CardsService {
     }
 
     if (card.userId.toString() !== userId) {
-      throw new ForbiddenException('You do not have permission to update this card');
+      throw new ForbiddenException(
+        'You do not have permission to update this card',
+      );
     }
 
-    const qrCodeUrl = await this.generateQRCode(card._id.toString());
+    // Ensure card has shareUuid
+    if (!card.shareUuid) {
+      card.shareUuid = randomUUID();
+      await card.save();
+    }
+
+    const qrCodeUrl = await this.generateQRCode(card.shareUuid);
     card.qrCodeUrl = qrCodeUrl;
     await card.save();
 

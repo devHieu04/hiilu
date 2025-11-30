@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { CardPreview } from '@/components/cards/CardPreview';
-import { cardsService, CreateCardRequest } from '@/lib/cards';
+import { cardsService, UpdateCardRequest, Card } from '@/lib/cards';
 
 type TabType = 'intro' | 'links' | 'qr';
 
@@ -30,15 +30,18 @@ const themeIcons = [
   { value: '#86efac', label: 'Xanh lá nhạt' },
 ];
 
-export default function CreateCardPage() {
+export default function EditCardPage() {
   const { user, token, isLoading: authLoading } = useAuth();
   const router = useRouter();
+  const params = useParams();
+  const cardId = params.id as string;
   const [activeTab, setActiveTab] = useState<TabType>('intro');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   // Form state
-  const [cardData, setCardData] = useState<Partial<CreateCardRequest>>({
+  const [cardData, setCardData] = useState<Partial<UpdateCardRequest>>({
     cardName: '',
     ownerName: '',
     email: '',
@@ -64,7 +67,47 @@ export default function CreateCardPage() {
     }
   }, [user, token, authLoading, router]);
 
-  const updateField = (field: keyof CreateCardRequest, value: any) => {
+  useEffect(() => {
+    const loadCard = async () => {
+      if (!cardId || !token) return;
+      try {
+        setIsLoading(true);
+        const card = await cardsService.getCard(cardId, token);
+
+        // Populate form with card data
+        setCardData({
+          cardName: card.cardName,
+          ownerName: card.ownerName,
+          email: card.email || '',
+          phoneNumber: card.phoneNumber || '',
+          company: card.company || '',
+          address: card.address || '',
+          description: card.description || '',
+          theme: card.theme || { color: '#0ea5e9' },
+          links: card.links || [],
+        });
+
+        // Set preview images
+        if (card.avatarUrl) {
+          setAvatarPreview(card.avatarUrl);
+        }
+        if (card.coverImageUrl) {
+          setCoverImagePreview(card.coverImageUrl);
+        }
+      } catch (err: any) {
+        setError(err.message || 'Không thể tải thông tin thẻ');
+        router.push('/dashboard');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (token && cardId) {
+      loadCard();
+    }
+  }, [cardId, token, router]);
+
+  const updateField = (field: keyof UpdateCardRequest, value: any) => {
     setCardData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -153,7 +196,7 @@ export default function CreateCardPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
+    if (!token || !cardId) return;
 
     if (!cardData.cardName || !cardData.ownerName) {
       setError('Vui lòng nhập tên thẻ và tên chủ thẻ');
@@ -164,10 +207,10 @@ export default function CreateCardPage() {
     setError('');
 
     try {
-      // Prepare data - ensure theme and links are properly formatted
-      const submitData: CreateCardRequest = {
-        cardName: cardData.cardName!,
-        ownerName: cardData.ownerName!,
+      // Prepare data
+      const submitData: UpdateCardRequest = {
+        cardName: cardData.cardName,
+        ownerName: cardData.ownerName,
         email: cardData.email || undefined,
         phoneNumber: cardData.phoneNumber || undefined,
         company: cardData.company || undefined,
@@ -184,7 +227,8 @@ export default function CreateCardPage() {
           : undefined,
       };
 
-      await cardsService.createCard(
+      await cardsService.updateCard(
+        cardId,
         submitData,
         token,
         avatarFile || undefined,
@@ -192,7 +236,7 @@ export default function CreateCardPage() {
       );
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Không thể tạo thẻ. Vui lòng thử lại.');
+      setError(err.message || 'Không thể cập nhật thẻ. Vui lòng thử lại.');
     } finally {
       setIsSubmitting(false);
     }
@@ -202,7 +246,7 @@ export default function CreateCardPage() {
     router.push('/dashboard');
   };
 
-  if (authLoading) {
+  if (authLoading || isLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center py-12">
@@ -227,7 +271,7 @@ export default function CreateCardPage() {
             >
               <span className="material-icons">arrow_back</span>
             </button>
-            <h1 className="text-2xl font-semibold text-gray-900">DANH THIẾP</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">CHỈNH SỬA DANH THIẾP</h1>
           </div>
 
           {/* Tabs */}
@@ -277,7 +321,7 @@ export default function CreateCardPage() {
                   </label>
                   <input
                     type="text"
-                    value={cardData.cardName}
+                    value={cardData.cardName || ''}
                     onChange={(e) => updateField('cardName', e.target.value)}
                     placeholder="Tên thẻ"
                     required
@@ -421,7 +465,7 @@ export default function CreateCardPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tên:</label>
                   <input
                     type="text"
-                    value={cardData.ownerName}
+                    value={cardData.ownerName || ''}
                     onChange={(e) => updateField('ownerName', e.target.value)}
                     placeholder="Họ và tên"
                     required
@@ -565,7 +609,7 @@ export default function CreateCardPage() {
               <div className="space-y-6">
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
                   <p className="text-sm text-gray-600">
-                    Mã QR sẽ được tạo tự động sau khi bạn tạo thẻ
+                    Mã QR đã được tạo tự động
                   </p>
                 </div>
               </div>
@@ -589,7 +633,7 @@ export default function CreateCardPage() {
                 disabled={isSubmitting}
                 className="rounded-lg bg-[#455A6B] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#374a5a] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Đang tạo...' : 'Xác nhận'}
+                {isSubmitting ? 'Đang cập nhật...' : 'Cập nhật'}
               </button>
             </div>
           </form>
