@@ -9,8 +9,11 @@ import Foundation
 
 struct APIConfig {
     // Using ngrok tunnel for development
-    static let baseURL = "https://68bbf5b7c771.ngrok-free.app/api/v1"
+    //static let baseURL = "https://68bbf5b7c771.ngrok-free.app/api/v1"
 
+    static let baseURL = "http://localhost:8080/api/v1"
+
+    
     // For local development
     // #if targetEnvironment(simulator)
     // static let baseURL = "http://localhost:8080/api/v1"

@@ -41,7 +41,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 height={32}
                 className="h-8 w-auto object-contain"
               />
-              <span className="text-xl font-semibold text-gray-900">HIILU</span>
+              
+              {/* <span className="text-xl font-semibold text-gray-900">HIILU</span> */}
             </div>
           </div>
 

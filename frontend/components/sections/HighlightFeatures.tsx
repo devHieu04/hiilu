@@ -8,19 +8,19 @@ const highlightFeatures = [
     title: 'Chạm để chia sẻ',
     description: 'Chia sẻ thông tin liên hệ chỉ với một lần chạm.',
     icon: '/assets/web/antenna.png',
-    bgColor: 'bg-[#d7f7ef]',
+    bgColor: 'bg-[#A8E6CF]',
   },
   {
     title: 'Kết nối nhanh',
-    description: 'Kết nối bạn bè, đối tác trong tích tắc.',
-    icon: '/assets/web/link.png',
-    bgColor: 'bg-[#e6e5ff]',
+    description: 'Kết nối bạn bè, đối tác nhanh chóng và tiện lợi.',
+    icon: '/assets/web/marketing.png',
+    bgColor: 'bg-[#BCAEFF]',
   },
   {
     title: 'Xây dựng thương hiệu',
     description: 'Một danh thiếp thông minh, ấn tượng chuyên nghiệp.',
     icon: '/assets/web/brand (2).png',
-    bgColor: 'bg-[#fde8f2]',
+    bgColor: 'bg-[#F7C8E0]',
   },
 ];
 

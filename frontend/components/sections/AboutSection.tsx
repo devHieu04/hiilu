@@ -34,9 +34,8 @@ export function AboutSection() {
             Giới thiệu
           </p>
           <p className="mt-4 text-base leading-relaxed text-[#4a4a4a] sm:mt-6 sm:text-lg">
-            Trong thế giới nơi mọi thứ đang được số hoá, HiiLu mang đến cách kết
-            nối mới, chuyên nghiệp và bền vững hơn. Bạn có thể dễ dàng chia sẻ
-            thông tin, lưu giữ dữ liệu và tạo ấn tượng trong từng lần chạm.
+            Trong thế giới nơi mọi thứ đều đang được số hóa, HiiLu mang đến cách kết nối hoàn toàn mới giúp bạn tạo dấu ấn chuyên nghiệp và bền vững hơn bao giờ hết. 
+Dù bạn là freelancer hay doanh nhân, HiiLu giúp bạn truyền tải bản sắc thương hiệu và tạo ấn tượng trong từng lần chạm.
           </p>
         </div>
 
@@ -56,7 +55,7 @@ export function AboutSection() {
               >
                 <div className={`${textOrder} flex flex-col justify-center`}>
                   <div className="space-y-5 sm:space-y-6">
-                    <h3 className="text-2xl font-semibold text-[#1a1a1a] sm:text-3xl">
+                    <h3 className="text-2xl font-semibold text-[#455A6B] sm:text-3xl">
                       {block.title}
                     </h3>
                     <p className="text-base leading-relaxed text-[#4a4a4a] sm:text-lg">

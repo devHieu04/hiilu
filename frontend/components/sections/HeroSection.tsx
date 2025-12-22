@@ -11,12 +11,12 @@ export function HeroSection() {
             </p>
             <h1 className="text-3xl font-semibold leading-[1.15] text-[#1a1a1a] sm:text-4xl md:text-[56px]">
               Kết nối{" "}
-              <span className="bg-gradient-to-r from-[#4ad5c2] to-[#6ec3f4] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#00BFA6] to-[#6ec3f4] bg-clip-text text-transparent">
                 một chạm
               </span>
               <br />
               chia sẻ{" "}
-              <span className="bg-gradient-to-r from-[#4ad5c2] to-[#6ec3f4] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#00BFA6] to-[#6ec3f4] bg-clip-text text-transparent">
                 không giới hạn
               </span>
             </h1>

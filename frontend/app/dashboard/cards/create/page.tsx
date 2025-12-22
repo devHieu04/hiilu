@@ -22,9 +22,10 @@ const themeColors = [
 
 const themeIcons = [
   { value: '', label: 'Không icon' },
-  { value: '#0ea5e9', label: 'Xanh dương' },
+  { value: '#7dd3fc', label: 'Xanh dương' },
   { value: '#c084fc', label: 'Tím nhạt' },
   { value: '#f9a8d4', label: 'Hồng nhạt' },
+  { value: '#fca5a5', label: 'Đỏ nhạt'},
   { value: '#fb923c', label: 'Cam nhạt' },
   { value: '#fde047', label: 'Vàng nhạt' },
   { value: '#86efac', label: 'Xanh lá nhạt' },

@@ -60,9 +60,9 @@ export function Navbar() {
             className="h-6 w-auto object-contain sm:h-8"
             priority
           />
-          <span className="text-sm font-semibold tracking-[0.3px] text-gray-900 sm:text-lg">
+          {/* <span className="text-sm font-semibold tracking-[0.3px] text-gray-900 sm:text-lg">
             HiiLu
-          </span>
+          </span> */}
         </div>
 
         <nav className="hidden items-center gap-6 text-xs font-medium tracking-[0.2px] text-[#4a4a4a] lg:flex lg:gap-8 lg:text-sm">
@@ -111,7 +111,7 @@ export function Navbar() {
               </button>
               <button
                 onClick={() => router.push('/dashboard')}
-                className="hidden rounded-full bg-gradient-to-r from-[#4ad5c2] to-[#6ec3f4] px-6 py-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(76,212,194,0.4)] transition hover:opacity-90 lg:inline-flex"
+                className="hidden rounded-full bg-gradient-to-r from-[#00BFA6] to-[#6ec3f4] px-6 py-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(76,212,194,0.4)] transition hover:opacity-90 lg:inline-flex"
               >
                 Vào Dashboard
               </button>

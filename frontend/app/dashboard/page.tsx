@@ -90,10 +90,10 @@ export default function DashboardPage() {
         <div className="rounded-[24px] bg-gradient-to-br from-[#e9d5ff] to-[#ddd6fe] p-6 sm:p-8">
           <div className="grid gap-6 md:grid-cols-2 md:items-center">
             <div className="space-y-4">
-              <h2 className="text-2xl font-semibold text-gray-900 sm:text-3xl">
+              <h2 className="text-2xl font-semibold text-gray-700 sm:text-xl">
                 Tải ngay ứng dụng HiiLu
               </h2>
-              <p className="text-sm leading-relaxed text-gray-700 sm:text-base">
+              <p className="text-sm leading-relaxed text-[#455A6B] sm:text-base">
                 Quét mã QR để cài đặt và đồng bộ thẻ của bạn trên ứng dụng.
               </p>
             </div>
