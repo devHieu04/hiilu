@@ -1,24 +1,6 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:7-jammy
-    container_name: hiilu-mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_DATABASE: hiilu
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - hiilu-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/hiilu --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: ./backend
@@ -28,13 +10,20 @@ services:
     ports:
       - '8080:8080'
     environment:
-      NODE_ENV: production
-      PORT: 8080
-      MONGODB_URI: mongodb://mongodb:27017/hiilu
-      CORS_ORIGINS: http://localhost:8081,http://frontend:8081
-    depends_on:
-      mongodb:
-        condition: service_healthy
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-8080}
+      API_PREFIX: ${API_PREFIX:-api/v1}
+      # MongoDB Atlas connection
+      MONGODB_URI: ${MONGODB_URI}
+      # CORS - Support both local dev and production
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081,https://hilu.pics,https://www.hilu.pics}
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-7d}
+      # Domain URLs
+      BACKEND_URL: ${BACKEND_URL:-https://api.hilu.pics}
+      FRONTEND_URL: ${FRONTEND_URL:-https://hilu.pics}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://hilu.pics}
     networks:
       - hiilu-network
     healthcheck:
@@ -52,8 +41,15 @@ services:
     ports:
       - '8081:8081'
     environment:
-      NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+      NODE_ENV: ${NODE_ENV:-production}
+      # API URL for client-side requests (from browser)
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.hilu.pics/api/v1}
+      # App configuration
+      NEXT_PUBLIC_APP_NAME: HiiLu
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://hilu.pics}
+      # Domain URLs
+      BACKEND_URL: ${BACKEND_URL:-https://api.hilu.pics}
+      FRONTEND_URL: ${FRONTEND_URL:-https://hilu.pics}
     depends_on:
       - backend
     networks:
@@ -62,6 +58,3 @@ services:
 networks:
   hiilu-network:
     driver: bridge
-
-volumes:
-  mongodb_data:
