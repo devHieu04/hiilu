@@ -31,6 +31,16 @@ struct HomeView: View {
                             }
                         }
                         Spacer()
+                        if !cards.isEmpty {
+                            NavigationLink(destination: CreateCardView {
+                                loadCards()
+                            }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 28))
+                                    .foregroundColor(Color(red: 0.43, green: 0.76, blue: 0.96))
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 20)
@@ -76,9 +86,8 @@ struct HomeView: View {
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 40)
 
-                            Button(action: {
-                                // TODO: Navigate to create card
-                                print("➕ [HomeView] Create card tapped")
+                            NavigationLink(destination: CreateCardView {
+                                loadCards()
                             }) {
                                 Text("Tạo thẻ mới")
                                     .font(.system(size: 16, weight: .semibold))
@@ -97,6 +106,7 @@ struct HomeView: View {
                                     )
                                     .cornerRadius(12)
                             }
+                            .buttonStyle(PlainButtonStyle())
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 60)
@@ -112,8 +122,7 @@ struct HomeView: View {
                                         loadCards()
                                     },
                                     onPreview: {
-                                        print("👁️ [HomeView] Preview card: \(card.cardName)")
-                                        // TODO: Show card preview
+                                        // Navigation handled by NavigationLink
                                     }
                                 )
                             }
@@ -175,6 +184,7 @@ struct CardItemView: View {
     let cardId: String
     let onEdit: () -> Void
     let onPreview: () -> Void
+    @State private var showShareSheet = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -288,28 +298,61 @@ struct CardItemView: View {
                 }
 
                 // Action buttons
-                HStack(spacing: 12) {
-                    Button(action: onPreview) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "eye.fill")
-                                .font(.system(size: 14))
-                            Text("Xem trước")
-                                .font(.system(size: 14, weight: .medium))
+                VStack(spacing: 12) {
+                    HStack(spacing: 12) {
+                        NavigationLink(destination: CardPreviewFullView(card: card)) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "eye.fill")
+                                    .font(.system(size: 14))
+                                Text("Xem trước")
+                                    .font(.system(size: 14, weight: .medium))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color(hex: card.theme?.color ?? "#0ea5e9")?.opacity(0.1) ?? Color.blue.opacity(0.1))
+                            .foregroundColor(Color(hex: card.theme?.color ?? "#0ea5e9") ?? Color.blue)
+                            .cornerRadius(10)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color(hex: card.theme?.color ?? "#0ea5e9")?.opacity(0.1) ?? Color.blue.opacity(0.1))
-                        .foregroundColor(Color(hex: card.theme?.color ?? "#0ea5e9") ?? Color.blue)
-                        .cornerRadius(10)
+                        .buttonStyle(PlainButtonStyle())
+
+                        NavigationLink(destination: EditCardView(cardId: cardId) {
+                            onEdit()
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 14))
+                                Text("Chỉnh sửa")
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                LinearGradient(
+                                    colors: [
+                                        Color(hex: card.theme?.color ?? "#0ea5e9") ?? Color.blue,
+                                        Color(hex: card.theme?.color ?? "#0ea5e9")?.opacity(0.8) ?? Color.blue.opacity(0.8)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
 
-                    NavigationLink(destination: EditCardView(cardId: cardId) {
-                        onEdit()
+                    Button(action: {
+                        if card.shareUuid == nil || card.qrCodeUrl == nil {
+                            // Show alert or handle error
+                            return
+                        }
+                        showShareSheet = true
                     }) {
                         HStack(spacing: 6) {
-                            Image(systemName: "pencil")
+                            Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 14))
-                            Text("Chỉnh sửa")
+                            Text("Chia sẻ")
                                 .font(.system(size: 14, weight: .semibold))
                         }
                         .frame(maxWidth: .infinity)
@@ -317,8 +360,8 @@ struct CardItemView: View {
                         .background(
                             LinearGradient(
                                 colors: [
-                                    Color(hex: card.theme?.color ?? "#0ea5e9") ?? Color.blue,
-                                    Color(hex: card.theme?.color ?? "#0ea5e9")?.opacity(0.8) ?? Color.blue.opacity(0.8)
+                                    Color(red: 0.29, green: 0.84, blue: 0.76),
+                                    Color(red: 0.43, green: 0.76, blue: 0.96)
                                 ],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -327,7 +370,6 @@ struct CardItemView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }
-                    .buttonStyle(PlainButtonStyle())
                 }
             }
             .padding(20)
@@ -336,6 +378,9 @@ struct CardItemView: View {
         .background(Color.white)
         .cornerRadius(20)
         .shadow(color: Color.black.opacity(0.15), radius: 12, x: 0, y: 6)
+        .sheet(isPresented: $showShareSheet) {
+            CardShareSheet(card: card)
+        }
     }
 
     private func getInitials(_ name: String) -> String {

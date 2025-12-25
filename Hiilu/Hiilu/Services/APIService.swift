@@ -330,6 +330,133 @@ class APIService {
             throw APIError.networkError(error.localizedDescription)
         }
     }
+
+    func createCard(
+        cardName: String,
+        ownerName: String,
+        email: String?,
+        phoneNumber: String?,
+        company: String?,
+        address: String?,
+        description: String?,
+        themeColor: String?,
+        links: [Link]?,
+        avatarImage: UIImage?,
+        coverImage: UIImage?
+    ) async throws -> Card {
+        print("➕ [APIService] Creating new card")
+
+        let fullURL = "\(baseURL)\(APIEndpoints.Cards.create)"
+        guard let url = URL(string: fullURL) else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+
+        // Create multipart form data
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var headers = APIConfig.headers(withToken: authToken)
+        headers.removeValue(forKey: "Content-Type") // Remove JSON content type
+        request.allHTTPHeaderFields = headers
+
+        var body = Data()
+
+        // Add text fields
+        func appendField(_ name: String, _ value: String) {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8)!)
+            body.append("\(value)\r\n".data(using: .utf8)!)
+        }
+
+        appendField("cardName", cardName)
+        appendField("ownerName", ownerName)
+        if let email = email, !email.isEmpty {
+            appendField("email", email)
+        }
+        if let phoneNumber = phoneNumber, !phoneNumber.isEmpty {
+            appendField("phoneNumber", phoneNumber)
+        }
+        if let company = company, !company.isEmpty {
+            appendField("company", company)
+        }
+        if let address = address, !address.isEmpty {
+            appendField("address", address)
+        }
+        if let description = description, !description.isEmpty {
+            appendField("description", description)
+        }
+
+        // Add theme
+        if let themeColor = themeColor, !themeColor.isEmpty {
+            let themeDict: [String: Any?] = ["color": themeColor, "icon": nil]
+            if let themeData = try? JSONSerialization.data(withJSONObject: themeDict),
+               let themeString = String(data: themeData, encoding: .utf8) {
+                appendField("theme", themeString)
+            }
+        }
+
+        // Add links
+        if let links = links, !links.isEmpty {
+            if let linksData = try? JSONEncoder().encode(links),
+               let linksString = String(data: linksData, encoding: .utf8) {
+                appendField("links", linksString)
+            }
+        }
+
+        // Add avatar image
+        if let avatarImage = avatarImage, let imageData = avatarImage.jpegData(compressionQuality: 0.8) {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"avatar\"; filename=\"avatar.jpg\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(imageData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+
+        // Add cover image
+        if let coverImage = coverImage, let imageData = coverImage.jpegData(compressionQuality: 0.8) {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"coverImage\"; filename=\"cover.jpg\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+            body.append(imageData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        print("📤 [APIService] Sending create request with \(body.count) bytes")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw APIError.invalidResponse
+            }
+
+            print("📥 [APIService] Response status: \(httpResponse.statusCode)")
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                if let errorData = try? JSONDecoder().decode(APIErrorResponse.self, from: data) {
+                    throw APIError.serverError(errorData.message)
+                }
+                throw APIError.httpError(httpResponse.statusCode)
+            }
+
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let newCard = try decoder.decode(Card.self, from: data)
+            print("✅ [APIService] Card created successfully")
+            return newCard
+        } catch {
+            if error is APIError {
+                throw error
+            }
+            throw APIError.networkError(error.localizedDescription)
+        }
+    }
 }
 
 enum APIError: Error, LocalizedError {

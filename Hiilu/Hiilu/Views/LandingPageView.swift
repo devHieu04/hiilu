@@ -12,6 +12,7 @@ struct LandingPageView: View {
     @State private var currentFeatureIndex = 0
     @State private var showLogin = false
     @State private var showRegister = false
+    @State private var showNFCRead = false
 
 //    let highlightFeatures = [
 //        HighlightFeature(
@@ -38,7 +39,7 @@ struct LandingPageView: View {
         ScrollView {
             VStack(spacing: 0) {
                 // Hero Section
-                HeroSectionView(showLogin: $showLogin, showRegister: $showRegister)
+                HeroSectionView(showLogin: $showLogin, showRegister: $showRegister, showNFCRead: $showNFCRead)
 
             }
         }
@@ -53,7 +54,7 @@ struct LandingPageView: View {
                 endPoint: .trailing
             )
         )
-        
+
 //        .background(
 //            LinearGradient(
 //                colors: [
@@ -71,6 +72,9 @@ struct LandingPageView: View {
         .sheet(isPresented: $showRegister) {
             RegisterView()
         }
+        .fullScreenCover(isPresented: $showNFCRead) {
+            NFCReadView()
+        }
     }
 }
 
@@ -84,6 +88,7 @@ struct HighlightFeature {
 struct HeroSectionView: View {
     @Binding var showLogin: Bool
     @Binding var showRegister: Bool
+    @Binding var showNFCRead: Bool
 
     var body: some View {
         VStack(spacing: 24) {
@@ -102,7 +107,7 @@ struct HeroSectionView: View {
             }
             .padding(.top, 100)
             .padding(.bottom, 32)
-            
+
             // Hero Content
             VStack(spacing: 8) {
                 Text("Kết nối một chạm, chia sẻ không giới hạn")
@@ -117,6 +122,33 @@ struct HeroSectionView: View {
 
             // Hero Content
             VStack(alignment: .leading, spacing: 16) {
+
+                // NFC Read Button
+                Button(action: {
+                    showNFCRead = true
+                }) {
+                    HStack {
+                        Image(systemName: "sensor.tag.radiowaves.forward.fill")
+                            .font(.system(size: 18))
+                        Text("Đọc thẻ NFC")
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.29, green: 0.84, blue: 0.76),
+                                Color(red: 0.43, green: 0.76, blue: 0.96)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                }
+                .padding(.bottom, 8)
 
                 // CTA Buttons
                 HStack(spacing: 12) {
@@ -421,7 +453,7 @@ struct LoginView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                
+
                     // Title
                     VStack(spacing: 8) {
                         Text("Chào mừng bạn")
@@ -624,7 +656,7 @@ struct RegisterView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                 
+
                     // Title
                     VStack(spacing: 8) {
                         Text("Đăng ký tài khoản")

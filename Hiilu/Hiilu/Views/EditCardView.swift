@@ -78,7 +78,7 @@ struct EditCardView: View {
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }
-                } else if let card = card {
+                } else if card != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             // Tabs
