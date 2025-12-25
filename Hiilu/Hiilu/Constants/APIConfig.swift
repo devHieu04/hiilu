@@ -8,21 +8,19 @@
 import Foundation
 
 struct APIConfig {
-    // Using ngrok tunnel for development
-    //static let baseURL = "https://68bbf5b7c771.ngrok-free.app/api/v1"
+    // Production domain
+    static let baseURL = "https://api.hilu.pics/api/v1"
 
-    static let baseURL = "http://localhost:8080/api/v1"
+    // Development URLs (comment out production and uncomment below for local testing)
+    // static let baseURL = "http://localhost:8080/api/v1"
+    // static let baseURL = "https://68bbf5b7c771.ngrok-free.app/api/v1"
 
-    
-    // For local development
+    // For simulator vs real device
     // #if targetEnvironment(simulator)
     // static let baseURL = "http://localhost:8080/api/v1"
     // #else
     // static let baseURL = "http://YOUR_MAC_IP:8080/api/v1"
     // #endif
-
-    // For production, change to your production URL
-    // static let baseURL = "https://api.hiilu.com/api/v1"
 
     static var defaultHeaders: [String: String] {
         [
