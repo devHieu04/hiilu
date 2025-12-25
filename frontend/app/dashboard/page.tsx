@@ -106,7 +106,7 @@ export default function DashboardPage() {
           <div className="grid gap-6 md:grid-cols-2 md:items-center">
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold text-[#fafafa] sm:text-xl">
-                Tải ngay ứng dụng HiiLu
+                Tải ngay ứng dụng HIILU
               </h2>
               <p className="text-sm leading-relaxed text-[#DDDDDD] sm:text-base">
                 Quét mã QR để cài đặt và đồng bộ thẻ của bạn trên ứng dụng.
