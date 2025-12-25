@@ -27,7 +27,7 @@ export function GuideSection() {
           <p className="text-3xl font-semibold uppercase text-[#455A6B] sm:text-4xl md:text-5xl lg:text-[56px]">
             Hướng dẫn sử dụng
           </p>
-          <p className="mt-2 text-base leading-relaxed text-[#4a4a4a] sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-[#4a4a4a] sm:text-lg">
             Việc sử dụng thẻ cá nhân thông minh HiiLu vô cùng đơn giản. Chỉ với vài thao tác cơ bản, bạn đã có thể nhanh chóng chia sẻ thông tin của mình một cách hiện đại và tiện lợi. Hãy cùng xem các bước hướng dẫn dưới đây để bắt đầu trải nghiệm ngay nhé!
           </p>
         </div>
