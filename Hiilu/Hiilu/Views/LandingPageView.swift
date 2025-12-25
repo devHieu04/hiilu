@@ -13,26 +13,26 @@ struct LandingPageView: View {
     @State private var showLogin = false
     @State private var showRegister = false
 
-    let highlightFeatures = [
-        HighlightFeature(
-            title: "Chạm để chia sẻ",
-            description: "Chia sẻ thông tin liên hệ chỉ với một lần chạm.",
-            icon: "antenna",
-            bgColor: Color(red: 0.84, green: 0.97, blue: 0.94)
-        ),
-        HighlightFeature(
-            title: "Kết nối nhanh",
-            description: "Kết nối bạn bè, đối tác trong tích tắc.",
-            icon: "link",
-            bgColor: Color(red: 0.90, green: 0.90, blue: 1.0)
-        ),
-        HighlightFeature(
-            title: "Xây dựng thương hiệu",
-            description: "Một danh thiếp thông minh, ấn tượng chuyên nghiệp.",
-            icon: "brand (2)",
-            bgColor: Color(red: 0.99, green: 0.91, blue: 0.95)
-        )
-    ]
+//    let highlightFeatures = [
+//        HighlightFeature(
+//            title: "Chạm để chia sẻ",
+//            description: "Chia sẻ thông tin liên hệ chỉ với một lần chạm.",
+//            icon: "antenna",
+//            bgColor: Color(red: 0.84, green: 0.97, blue: 0.94)
+//        ),
+//        HighlightFeature(
+//            title: "Kết nối nhanh",
+//            description: "Kết nối bạn bè, đối tác trong tích tắc.",
+//            icon: "link",
+//            bgColor: Color(red: 0.90, green: 0.90, blue: 1.0)
+//        ),
+//        HighlightFeature(
+//            title: "Xây dựng thương hiệu",
+//            description: "Một danh thiếp thông minh, ấn tượng chuyên nghiệp.",
+//            icon: "brand (2)",
+//            bgColor: Color(red: 0.99, green: 0.91, blue: 0.95)
+//        )
+//    ]
 
     var body: some View {
         ScrollView {
@@ -40,38 +40,31 @@ struct LandingPageView: View {
                 // Hero Section
                 HeroSectionView(showLogin: $showLogin, showRegister: $showRegister)
 
-                // Highlight Features
-                HighlightFeaturesView(
-                    features: highlightFeatures,
-                    currentIndex: $currentFeatureIndex
-                )
-                .padding(.top, -60)
-
-                // About Section
-                AboutSectionView()
-                    .padding(.top, 40)
-
-                // Features Section
-                FeaturesSectionView()
-                    .padding(.top, 40)
-
-                // Contact Section
-                ContactSectionView()
-                    .padding(.top, 40)
-                    .padding(.bottom, 40)
             }
         }
         .background(
             LinearGradient(
                 colors: [
-                    Color(red: 0.96, green: 0.96, blue: 1.0),
-                    Color(red: 0.93, green: 0.95, blue: 1.0),
-                    Color.white
+                    Color(red: 0.996, green: 0.953, blue: 1.0),
+                    Color(red: 0.945, green: 0.910, blue: 1.0),
+                    Color(red: 0.898, green: 0.949, blue: 1.0)
                 ],
-                startPoint: .top,
-                endPoint: .bottom
+                startPoint: .leading,
+                endPoint: .trailing
             )
         )
+        
+//        .background(
+//            LinearGradient(
+//                colors: [
+//                    Color(red: 0.96, green: 0.96, blue: 1.0),
+//                    Color(red: 0.93, green: 0.95, blue: 1.0),
+//                    Color.white
+//                ],
+//                startPoint: .top,
+//                endPoint: .bottom
+//            )
+//        )
         .sheet(isPresented: $showLogin) {
             LoginView()
         }
@@ -100,78 +93,30 @@ struct HeroSectionView: View {
                     Image(uiImage: logoImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 92, height: 32)
+                        .frame(width: 184, height: 64)
                 } else {
                     Text("HiiLu")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(Color(red: 0.43, green: 0.76, blue: 0.96))
                 }
-
-                Text("HiiLu")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.gray)
             }
-            .padding(.top, 20)
+            .padding(.top, 100)
+            .padding(.bottom, 32)
+            
+            // Hero Content
+            VStack(spacing: 8) {
+                Text("Kết nối một chạm, chia sẻ không giới hạn")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundColor(.gray)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+            }
+            .lineLimit(nil)
+            .padding(.horizontal, 24)
+            Spacer()
 
             // Hero Content
             VStack(alignment: .leading, spacing: 16) {
-                Text("HIILU PLATFORM")
-                    .font(.system(size: 10, weight: .semibold))
-                    .tracking(3.5)
-                    .foregroundColor(Color(red: 0.35, green: 0.42, blue: 0.62))
-
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 0) {
-                        Text("Kết nối ")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundColor(.black)
-                        Text("một chạm")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.29, green: 0.84, blue: 0.76),
-                                        Color(red: 0.43, green: 0.76, blue: 0.96)
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                    }
-
-                    HStack(spacing: 0) {
-                        Text("chia sẻ ")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundColor(.black)
-                        Text("không giới hạn")
-                            .font(.system(size: 32, weight: .semibold))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.29, green: 0.84, blue: 0.76),
-                                        Color(red: 0.43, green: 0.76, blue: 0.96)
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                    }
-                }
-
-                Text("Nền tảng tạo và chia sẻ thẻ cá nhân thông minh tại Việt Nam. Chỉ vài thao tác là bạn đã có thể truyền tải đầy đủ thông tin của mình một cách hiện đại và bảo mật.")
-                    .font(.system(size: 16))
-                    .foregroundColor(Color(red: 0.29, green: 0.29, blue: 0.29))
-                    .lineSpacing(4)
-
-                // Tags
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        TagView(text: "Freelancer")
-                        TagView(text: "Doanh nhân")
-                        TagView(text: "Sinh viên")
-                        TagView(text: "Doanh nghiệp")
-                    }
-                }
 
                 // CTA Buttons
                 HStack(spacing: 12) {
@@ -179,7 +124,7 @@ struct HeroSectionView: View {
                         showLogin = true
                     }) {
                         Text("Đăng nhập")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 14, weight: .medium))
                             .foregroundColor(Color(red: 0.05, green: 0.56, blue: 0.63))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -215,34 +160,22 @@ struct HeroSectionView: View {
                 }
             }
             .padding(.horizontal, 20)
-
-            // Hero Image
-            if let heroImage = UIImage(named: "Group 69") {
-                Image(uiImage: heroImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: 300)
-                    .padding(.top, 20)
-            } else {
-                // Fallback if image not found
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 300, height: 280)
-                    .padding(.top, 20)
-            }
+            .padding(.bottom, 100)
         }
-        .padding(.vertical, 24)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.996, green: 0.953, blue: 1.0),
-                    Color(red: 0.945, green: 0.910, blue: 1.0),
-                    Color(red: 0.898, green: 0.949, blue: 1.0)
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//       .padding(.vertical, 24)
+//        .background(
+//            LinearGradient(
+//                colors: [
+//                    Color(red: 0.996, green: 0.953, blue: 1.0),
+//                    Color(red: 0.945, green: 0.910, blue: 1.0),
+//                    Color(red: 0.898, green: 0.949, blue: 1.0)
+//                ],
+//                startPoint: .leading,
+//                endPoint: .trailing
+//            )
+//        )
+//        .ignoresSafeArea()
     }
 }
 
@@ -335,45 +268,6 @@ struct FeatureCardView: View {
     }
 }
 
-struct AboutSectionView: View {
-    var body: some View {
-        VStack(spacing: 32) {
-            VStack(spacing: 12) {
-                Text("GIỚI THIỆU")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundColor(Color(red: 0.27, green: 0.35, blue: 0.42))
-
-                Text("Trong thế giới nơi mọi thứ đang được số hoá, HiiLu mang đến cách kết nối mới, chuyên nghiệp và bền vững hơn. Bạn có thể dễ dàng chia sẻ thông tin, lưu giữ dữ liệu và tạo ấn tượng trong từng lần chạm.")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color(red: 0.29, green: 0.29, blue: 0.29))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-            }
-            .padding(.horizontal, 20)
-
-            // About blocks
-            VStack(spacing: 40) {
-                AboutBlockView(
-                    title: "Tầm nhìn",
-                    description: "Trở thành công cụ kết nối đáng tin cậy và hiện đại nhất, giúp mọi người rút ngắn khoảng cách - từ công nghệ đến cảm xúc. Thay thế danh thiếp giấy bằng thẻ thông minh gọn nhẹ và tiện lợi.",
-                    image: "image4",
-                    chips: ["Tin cậy", "Hiện đại", "Cảm hứng"]
-                )
-
-                AboutBlockView(
-                    title: "Điểm nổi bật",
-                    description: "Ứng dụng công nghệ mới giúp chia sẻ thông tin chỉ trong một chạm. Thiết kế đơn giản, hiện đại, bảo mật cao. Mọi dữ liệu đều được lưu trữ an toàn và dễ dàng cập nhật bất cứ lúc nào.",
-                    image: "image3",
-                    chips: ["Bảo mật cao", "Cập nhật tức thì"]
-                )
-            }
-            .padding(.horizontal, 20)
-        }
-        .padding(.vertical, 40)
-        .background(Color.white)
-    }
-}
-
 struct AboutBlockView: View {
     let title: String
     let description: String
@@ -423,88 +317,6 @@ struct AboutBlockView: View {
                 }
             }
         }
-    }
-}
-
-struct FeaturesSectionView: View {
-    let features = [
-        FeatureData(
-            title: "Tùy chỉnh giao diện",
-            description: "Thoả sức sáng tạo với nhiều lựa chọn màu sắc, phong cách để danh thiếp của bạn trở nên chuyên nghiệp hơn bao giờ hết.",
-            icon: "color-palette",
-            accent: Color(red: 0.875, green: 0.961, blue: 0.925)
-        ),
-        FeatureData(
-            title: "Cập nhật thông tin",
-            description: "Bạn có thể chỉnh sửa hoặc bổ sung thông tin cá nhân chỉ trong vài thao tác. Tất cả thay đổi sẽ được đồng bộ ngay trên danh thiếp của bạn.",
-            icon: "user-profile-01",
-            accent: Color(red: 0.910, green: 0.941, blue: 1.0)
-        ),
-        FeatureData(
-            title: "Thẻ thông minh",
-            description: "Chia sẻ thông tin liên hệ chỉ bằng một lần chạm hoặc một lần quét – không cần app, không cần kết nối mạng.",
-            icon: "id-card",
-            accent: Color(red: 0.992, green: 0.922, blue: 0.953)
-        ),
-        FeatureData(
-            title: "Gửi lời nhắn",
-            description: "Người khác có thể để lại thông tin và lời nhắn cho bạn sau khi chạm thẻ. Mọi tương tác đều được lưu lại để bạn kết nối và phản hồi.",
-            icon: "chat",
-            accent: Color(red: 1.0, green: 0.961, blue: 0.875)
-        ),
-        FeatureData(
-            title: "Liên kết bio",
-            description: "Tổng hợp tất cả link quan trọng của bạn: Facebook, Instagram, Zalo, LinkedIn, portfolio... trong một trang duy nhất.",
-            icon: "link-angled",
-            accent: Color(red: 0.914, green: 0.925, blue: 1.0)
-        ),
-        FeatureData(
-            title: "Hỗ trợ tận tâm 24/7",
-            description: "Đội ngũ HiiLu luôn đồng hành cùng bạn, sẵn sàng hướng dẫn và giải quyết mọi khó khăn trong quá trình sử dụng thẻ.",
-            icon: "personalized-support",
-            accent: Color(red: 0.902, green: 0.965, blue: 1.0)
-        )
-    ]
-
-    var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 12) {
-                Text("TÍNH NĂNG CỦA HIILU")
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundColor(Color(red: 0.27, green: 0.35, blue: 0.42))
-
-                Text("Khám phá những tính năng mạnh mẽ giúp bạn tạo ra danh thiếp số chuyên nghiệp, kết nối hiệu quả và quản lý thông tin một cách thông minh.")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color(red: 0.29, green: 0.29, blue: 0.29))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-            }
-            .padding(.horizontal, 20)
-
-            // Feature cards
-            VStack(spacing: 16) {
-                ForEach(features, id: \.title) { feature in
-                    FeatureItemView(
-                        icon: feature.icon,
-                        title: feature.title,
-                        description: feature.description,
-                        accent: feature.accent
-                    )
-                }
-            }
-            .padding(.horizontal, 20)
-        }
-        .padding(.vertical, 40)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.96, green: 0.96, blue: 1.0),
-                    Color.white
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
     }
 }
 
@@ -562,48 +374,6 @@ struct FeatureItemView: View {
     }
 }
 
-struct ContactSectionView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Text("Liên hệ HiiLu")
-                .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(.white)
-
-            Text("Đội ngũ HiiLu luôn đồng hành cùng bạn, sẵn sàng hướng dẫn và giải đáp mọi thắc mắc trong suốt quá trình sử dụng sản phẩm.")
-                .font(.system(size: 12))
-                .foregroundColor(.white.opacity(0.9))
-                .multilineTextAlignment(.center)
-                .lineSpacing(4)
-
-            VStack(spacing: 12) {
-                ContactItemView(
-                    icon: "phone",
-                    label: "Hotline",
-                    value: "0358605833"
-                )
-
-                ContactItemView(
-                    icon: "mail",
-                    label: "Email",
-                    value: "contact@hiilu.pics"
-                )
-            }
-        }
-        .padding(24)
-        .frame(maxWidth: .infinity)
-        .background(
-            LinearGradient(
-                colors: [
-                    Color(red: 0.04, green: 0.36, blue: 0.88),
-                    Color(red: 0.07, green: 0.51, blue: 1.0)
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        )
-    }
-}
-
 struct ContactItemView: View {
     let icon: String
     let label: String
@@ -651,34 +421,19 @@ struct LoginView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Logo
-                    VStack(spacing: 8) {
-                if let logoImage = UIImage(named: "Group 4") {
-                    Image(uiImage: logoImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 92, height: 32)
-                } else {
-                    Text("HiiLu")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(Color(red: 0.43, green: 0.76, blue: 0.96))
-                }
-                        Text("HiiLu")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.top, 40)
-
+                
                     // Title
                     VStack(spacing: 8) {
-                        Text("Đăng nhập")
+                        Text("Chào mừng bạn")
                             .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.black)
-                        Text("Chào mừng bạn trở lại!")
+                            .foregroundColor(Color(red: 0.34, green: 0.44, blue: 0.50))
+                            .padding(.bottom, 2)
+                        Text("Vui lòng đăng nhập để trải nghiệm ứng dụng!")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 20)
+                    .padding(.top, -12)
 
                     // Error message
                     if !errorMessage.isEmpty {
@@ -694,7 +449,7 @@ struct LoginView: View {
                         // Email field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Email")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 20, weight: .medium))
                                 .foregroundColor(.black)
                             TextField("Nhập email của bạn", text: $email)
                                 .textFieldStyle(CustomTextFieldStyle())
@@ -706,7 +461,7 @@ struct LoginView: View {
                         // Password field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Mật khẩu")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 20, weight: .medium))
                                 .foregroundColor(.black)
                             HStack {
                                 if showPassword {
@@ -731,11 +486,11 @@ struct LoginView: View {
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 } else {
                                     Text("Đăng nhập")
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(.system(size: 20, weight: .semibold))
                                 }
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
+                            .padding(.vertical, 18)
                             .background(
                                 LinearGradient(
                                     colors: [
@@ -752,6 +507,7 @@ struct LoginView: View {
                         }
                         .disabled(isLoading || email.isEmpty || password.isEmpty)
                         .opacity((isLoading || email.isEmpty || password.isEmpty) ? 0.6 : 1.0)
+                        .padding(.top, 12)
                     }
                     .padding(.horizontal, 24)
 
@@ -771,7 +527,7 @@ struct LoginView: View {
                     }
                     .padding(.top, 8)
                 }
-                .padding(.vertical, 32)
+                .padding(.vertical, 24)
             }
             .background(
                 LinearGradient(
@@ -784,15 +540,28 @@ struct LoginView: View {
                     endPoint: .bottom
                 )
             )
-            .navigationTitle("Đăng nhập")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Group {
+                        if let logoImage = UIImage(named: "Group 4") {
+                            Image(uiImage: logoImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 57.5, height: 20)
+                        } else {
+                            Text("HiiLu")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(Color(red: 0.43, green: 0.76, blue: 0.96))
+                        }
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Đóng") {
                         dismiss()
                     }
                 }
             }
+
             .sheet(isPresented: $showRegister) {
                 RegisterView()
             }
@@ -855,34 +624,19 @@ struct RegisterView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Logo
-                    VStack(spacing: 8) {
-                if let logoImage = UIImage(named: "Group 4") {
-                    Image(uiImage: logoImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 92, height: 32)
-                } else {
-                    Text("HiiLu")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundColor(Color(red: 0.43, green: 0.76, blue: 0.96))
-                }
-                        Text("HiiLu")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.top, 40)
-
+                 
                     // Title
                     VStack(spacing: 8) {
-                        Text("Đăng ký")
+                        Text("Đăng ký tài khoản")
                             .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.black)
-                        Text("Tạo tài khoản mới để bắt đầu")
+                            .foregroundColor(Color(red: 0.34, green: 0.44, blue: 0.50))
+                            .padding(.bottom, 2)
+                        Text("Hãy tạo tài khoản mới để trải nghiệm ứng dụng!")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 20)
+                    .padding(.top, -12)
 
                     // Error message
                     if !errorMessage.isEmpty {
@@ -898,7 +652,7 @@ struct RegisterView: View {
                         // Name field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Họ và tên")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.black)
                             TextField("Nhập họ và tên", text: $name)
                                 .textFieldStyle(CustomTextFieldStyle())
@@ -907,7 +661,7 @@ struct RegisterView: View {
                         // Email field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Email")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.black)
                             TextField("Nhập email của bạn", text: $email)
                                 .textFieldStyle(CustomTextFieldStyle())
@@ -919,7 +673,7 @@ struct RegisterView: View {
                         // Password field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Mật khẩu")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.black)
                             HStack {
                                 if showPassword {
@@ -939,7 +693,7 @@ struct RegisterView: View {
                         // Confirm password field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Xác nhận mật khẩu")
-                                .font(.system(size: 14, weight: .medium))
+                                .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.black)
                             HStack {
                                 if showConfirmPassword {
@@ -964,11 +718,11 @@ struct RegisterView: View {
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 } else {
                                     Text("Đăng ký")
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(.system(size: 20, weight: .semibold))
                                 }
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
+                            .padding(.vertical, 18)
                             .background(
                                 LinearGradient(
                                     colors: [
@@ -985,6 +739,7 @@ struct RegisterView: View {
                         }
                         .disabled(isLoading || !isFormValid)
                         .opacity((isLoading || !isFormValid) ? 0.6 : 1.0)
+                        .padding(.top, 12)
                     }
                     .padding(.horizontal, 24)
 
@@ -1004,7 +759,7 @@ struct RegisterView: View {
                     }
                     .padding(.top, 8)
                 }
-                .padding(.vertical, 32)
+                .padding(.vertical, 24)
             }
             .background(
                 LinearGradient(
@@ -1017,9 +772,30 @@ struct RegisterView: View {
                     endPoint: .bottom
                 )
             )
-            .navigationTitle("Đăng ký")
-            .navigationBarTitleDisplayMode(.inline)
+//            .navigationTitle("Đăng ký")
+//            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button("Đóng") {
+//                        dismiss()
+//                    }
+//                }
+//            }
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Group {
+                        if let logoImage = UIImage(named: "Group 4") {
+                            Image(uiImage: logoImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 57.5, height: 20)
+                        } else {
+                            Text("HiiLu")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(Color(red: 0.43, green: 0.76, blue: 0.96))
+                        }
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Đóng") {
                         dismiss()
