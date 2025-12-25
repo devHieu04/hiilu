@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { CardItem } from "@/components/dashboard/CardItem";
 import { cardsService, Card } from "@/lib/cards";
+import CardShare from "@/components/cards/CardShare";
 import Image from "next/image";
 
 export default function DashboardPage() {
@@ -15,6 +16,10 @@ export default function DashboardPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareCard, setShareCard] = useState<Card | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
+
 
   useEffect(() => {
     if (!authLoading) {
@@ -55,20 +60,30 @@ export default function DashboardPage() {
     router.push(`/dashboard/cards/edit/${card._id}`);
   };
 
-  const handleShare = async (card: Card) => {
-    try {
-      if (!card.shareUuid) {
-        alert("Thẻ này chưa có link chia sẻ. Vui lòng tải lại trang.");
-        return;
-      }
+  // const handleShare = async (card: Card) => {
+  //   try {
+  //     if (!card.shareUuid) {
+  //       alert("Thẻ này chưa có link chia sẻ. Vui lòng tải lại trang.");
+  //       return;
+  //     }
 
-      const cardUrl = `${window.location.origin}/card/${card.shareUuid}`;
-      await navigator.clipboard.writeText(cardUrl);
-      alert("Đã sao chép link thẻ!");
-    } catch (err: any) {
-      alert("Không thể sao chép link. Vui lòng thử lại.");
-    }
-  };
+  //     const cardUrl = `${window.location.origin}/card/${card.shareUuid}`;
+  //     await navigator.clipboard.writeText(cardUrl);
+  //     alert("Đã sao chép link thẻ!");
+  //   } catch (err: any) {
+  //     alert("Không thể sao chép link. Vui lòng thử lại.");
+  //   }
+  // };
+
+  const handleShare = (card: Card) => {
+  if (!card.shareUuid || !card.qrCodeUrl) {
+    alert("Thẻ này chưa sẵn sàng để chia sẻ.");
+    return;
+  }
+  setShareCard(card);
+  setIsShareOpen(true);
+};
+
 
   if (authLoading || isLoading) {
     return (
@@ -146,6 +161,16 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+      {isShareOpen && shareCard && (
+  <CardShare
+    card={shareCard}
+    onClose={() => {
+      setIsShareOpen(false);
+      setShareCard(null);
+    }}
+  />
+)}
+
     </DashboardLayout>
   );
 }
