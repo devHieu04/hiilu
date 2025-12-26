@@ -114,8 +114,14 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center justify-center">
               <div className="rounded-lg bg-white p-4 shadow-lg">
-                <div className="flex h-48 w-48 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-400">
-                  mã QR
+                <div className="flex h-48 w-48 items-center justify-center rounded-lg">
+                  <Image
+                    src="/assets/app-download-qr.jpeg"
+                    alt="QR Code tải ứng dụng HiiLu"
+                    width={192}
+                    height={192}
+                    className="h-full w-full object-contain"
+                  />
                 </div>
               </div>
             </div>
