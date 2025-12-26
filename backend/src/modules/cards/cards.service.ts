@@ -185,7 +185,7 @@ export class CardsService {
     try {
       const appUrl =
         this.configService.get<string>('NEXT_PUBLIC_APP_URL') ||
-        'http://localhost:8081';
+        'https://hilu.pics';
       const cardUrl = `${appUrl}/card/${shareUuid}`;
 
       // Generate QR code as data URL
@@ -240,7 +240,7 @@ export class CardsService {
     const fileBaseUrl =
       this.configService.get<string>('FILE_BASE_URL') ||
       this.configService.get<string>('BACKEND_PUBLIC_URL') ||
-      'http://localhost:8080';
+      'https://api.hilu.pics';
 
     if (cardObject.avatarUrl) {
       cardObject.avatarUrl = `${fileBaseUrl}/${cardObject.avatarUrl}`;

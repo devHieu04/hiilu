@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 // Get API URL from environment
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.hilu.pics/api/v1';
 const API_BASE_URL = API_URL.replace('/api/v1', '');
 
 // Parse API URL to get protocol, hostname, and port
@@ -14,11 +14,11 @@ const parseApiUrl = (url: string) => {
       port: urlObj.port || (urlObj.protocol === 'https:' ? '443' : '80'),
     };
   } catch {
-    // Fallback for localhost
+    // Fallback for production
     return {
-      protocol: 'http' as const,
-      hostname: 'localhost',
-      port: '8080',
+      protocol: 'https' as const,
+      hostname: 'api.hilu.pics',
+      port: '443',
     };
   }
 };

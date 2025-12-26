@@ -41,7 +41,8 @@ class NFCService: NSObject, ObservableObject {
         isReading = true
         readError = nil
 
-        readerSession = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: true)
+        // Set invalidateAfterFirstRead to false to manually handle reading
+        readerSession = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
         readerSession?.alertMessage = "Đưa iPhone gần thẻ NFC để đọc"
         readerSession?.begin()
     }
@@ -89,20 +90,21 @@ class NFCService: NSObject, ObservableObject {
 
 // MARK: - NFCNDEFReaderSessionDelegate
 extension NFCService: NFCNDEFReaderSessionDelegate {
+
     func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
         DispatchQueue.main.async {
+            let wasWriting = self.isWriting
+
             self.isReading = false
             self.isWriting = false
 
             if let nfcError = error as? NFCReaderError {
-                switch nfcError.code {
-                case .readerSessionInvalidationErrorUserCanceled:
+                if nfcError.code == .readerSessionInvalidationErrorUserCanceled {
                     // User canceled, not an error
                     self.readError = nil
                     self.writeError = nil
-                    self.onWriteComplete?(false, nil)
-                default:
-                    if self.isWriting {
+                } else {
+                    if wasWriting {
                         self.writeError = nfcError.localizedDescription
                         self.onWriteComplete?(false, nfcError.localizedDescription)
                     } else {
@@ -110,7 +112,7 @@ extension NFCService: NFCNDEFReaderSessionDelegate {
                     }
                 }
             } else {
-                if self.isWriting {
+                if wasWriting {
                     self.writeError = error.localizedDescription
                     self.onWriteComplete?(false, error.localizedDescription)
                 } else {
@@ -124,39 +126,88 @@ extension NFCService: NFCNDEFReaderSessionDelegate {
         }
     }
 
-    func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
-        // This is called for reading operations only
-        for message in messages {
-            for record in message.records {
-                if let url = record.wellKnownTypeURIPayload() {
-                    DispatchQueue.main.async {
-                        self.lastReadURL = url.absoluteString
-                        self.isReading = false
-                        self.onReadComplete?(url.absoluteString)
-                        self.onReadComplete = nil
-                    }
-                    session.invalidate()
-                    return
-                }
-            }
-        }
+    func readerSessionDidBecomeActive(_ session: NFCNDEFReaderSession) {
+        // Called when the NFC reader session becomes active
+        // This is when the user can start scanning
+        print("NFC Reader Session is now active and ready to scan")
+    }
 
-        DispatchQueue.main.async {
-            self.isReading = false
-            self.readError = "Không tìm thấy URL trong thẻ NFC"
-            self.onReadComplete?(nil)
-            self.onReadComplete = nil
-        }
-        session.invalidate()
+    func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
+        // This method is required by the protocol but we handle reading manually with didDetect tags
+        // You can add implementation here if needed for automatic NDEF message handling
     }
 
     func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
-        // This is called for writing operations
         guard let tag = tags.first else {
             session.invalidate(errorMessage: "Không tìm thấy thẻ NFC")
             return
         }
 
+        if isWriting {
+            writeToTag(session: session, tag: tag)
+        } else if isReading {
+            readFromTag(session: session, tag: tag)
+        }
+    }
+
+    private func readFromTag(session: NFCNDEFReaderSession, tag: NFCNDEFTag) {
+        session.connect(to: tag) { error in
+            if let error = error {
+                session.invalidate(errorMessage: "Không thể kết nối: \(error.localizedDescription)")
+                return
+            }
+
+            tag.readNDEF { message, error in
+                if let error = error {
+                    session.invalidate(errorMessage: "Không thể đọc thẻ: \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        self.isReading = false
+                        self.readError = error.localizedDescription
+                        self.onReadComplete?(nil)
+                        self.onReadComplete = nil
+                    }
+                    return
+                }
+
+                guard let message = message else {
+                    session.invalidate(errorMessage: "Thẻ trống")
+                    DispatchQueue.main.async {
+                        self.isReading = false
+                        self.readError = "Thẻ NFC trống"
+                        self.onReadComplete?(nil)
+                        self.onReadComplete = nil
+                    }
+                    return
+                }
+
+                // Find URL in NDEF records
+                for record in message.records {
+                    if let url = record.wellKnownTypeURIPayload() {
+                        session.alertMessage = "Đọc thẻ thành công!"
+                        session.invalidate()
+                        DispatchQueue.main.async {
+                            self.lastReadURL = url.absoluteString
+                            self.isReading = false
+                            self.onReadComplete?(url.absoluteString)
+                            self.onReadComplete = nil
+                        }
+                        return
+                    }
+                }
+
+                // No URL found
+                session.invalidate(errorMessage: "Không tìm thấy URL trong thẻ")
+                DispatchQueue.main.async {
+                    self.isReading = false
+                    self.readError = "Không tìm thấy URL trong thẻ NFC"
+                    self.onReadComplete?(nil)
+                    self.onReadComplete = nil
+                }
+            }
+        }
+    }
+
+    private func writeToTag(session: NFCNDEFReaderSession, tag: NFCNDEFTag) {
         guard let urlString = urlToWrite, let url = URL(string: urlString) else {
             session.invalidate(errorMessage: "URL không hợp lệ")
             return

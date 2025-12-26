@@ -21,8 +21,8 @@ struct CardShareSheet: View {
     }
 
     private var shareLink: String {
-        // TODO: Update with actual frontend URL
-        let frontendURL = "https://68bbf5b7c771.ngrok-free.app" // Should be from config
+        // Production frontend URL
+        let frontendURL = "https://hilu.pics"
         return "\(frontendURL)/card/\(card.shareUuid ?? "")"
     }
 
