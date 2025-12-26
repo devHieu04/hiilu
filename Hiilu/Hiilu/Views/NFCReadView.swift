@@ -117,40 +117,24 @@ struct NFCReadView: View {
         isLoading = false
 
         nfcService.startReading { url in
-            guard let url = url else {
+            guard let urlString = url else {
                 if let error = nfcService.readError {
                     errorMessage = error
                 }
                 return
             }
 
-            // Extract UUID from URL
-            // URL format: https://domain.com/card/{uuid}
-            let components = url.split(separator: "/")
-            guard let uuid = components.last else {
-                errorMessage = "URL không hợp lệ"
-                return
-            }
+            // Open URL in Safari instead of calling API
+            print("📱 Opening card URL in Safari: \(urlString)")
 
-            isLoading = true
-
-            Task {
-                do {
-                    let cardData = try await APIService.shared.getCardByUuid(uuid: String(uuid))
-                    await MainActor.run {
-                        self.card = cardData
-                        self.isLoading = false
-                    }
-                } catch {
-                    await MainActor.run {
-                        self.isLoading = false
-                        if let apiError = error as? APIError {
-                            self.errorMessage = apiError.localizedDescription
-                        } else {
-                            self.errorMessage = "Không thể tải thông tin thẻ"
-                        }
-                    }
+            if let url = URL(string: urlString) {
+                DispatchQueue.main.async {
+                    UIApplication.shared.open(url)
+                    // Close this view after opening Safari
+                    self.dismiss()
                 }
+            } else {
+                errorMessage = "URL không hợp lệ"
             }
         }
     }
